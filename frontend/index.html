@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URL Shortener</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🔗 URL Shortener</h1>
+    <form id="urlForm">
+      <input type="url" id="originalURL" placeholder="Paste your URL here..." required />
+      <button type="submit">Shorten</button>
+    </form>
+    <div id="result" class="hidden">
+      <p>Shortened URL:</p>
+      <a id="shortLink" href="#" target="_blank"></a>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("urlForm");
+    const result = document.getElementById("result");
+    const shortLink = document.getElementById("shortLink");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const originalURL = document.getElementById("originalURL").value;
+
+      const response = await fetch("http://localhost:3000/api/shorten", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ originalURL })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        shortLink.href = `http://localhost:3000/${data.shortURL}`;
+        shortLink.textContent = shortLink.href;
+        result.classList.remove("hidden");
+      } else {
+        alert(data.error || "Error shortening URL");
+      }
+    });
+  </script>
+</body>
+</html>

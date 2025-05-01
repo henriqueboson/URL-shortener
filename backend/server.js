@@ -1,14 +1,16 @@
-const express = require('express');
-const cors = require('cors')
-const mongoose = require('mongoose')
-const nanoid = require('nanoid')
+import dotenv from 'dotenv';
+import express from 'express';
+import cors from 'cors';
+import mongoose from 'mongoose';
+import { nanoid } from 'nanoid';
 
+dotenv.config();
 const app = express();
 
 app.use(cors())
 app.use(express.json())
 
-const mongoUri = process.env.MONGOURI
+const mongoUri = process.env.MONGO_URI
 
 await mongoose.connect(mongoUri)
 
@@ -34,7 +36,7 @@ app.post("/api/shorten", async (req, res) => {
     if (!originalURL) {
         return res.status(400).json({ error: 'URL is required' });
     }
-    const shortURL = nanoid(6)
+    const shortURL = nanoid(5)
 
     try{
         const newURL = new URL({originalURL, shortURL});
@@ -64,3 +66,7 @@ app.get("/:shortURL", async (req, res) => {
         res.status(500).json({ error: 'Falha ao redirecionar' });
     }
 });
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
